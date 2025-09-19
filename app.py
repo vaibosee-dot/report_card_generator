@@ -4,6 +4,10 @@ from docxtpl import DocxTemplate
 import zipfile
 import os
 
+
+pwd = os.getcwd()
+print("Current working directory:", pwd)
+
 app = Flask(__name__)
 
 # Ensure folders exist
