@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Card Generator</title>
+</head>
+<body>
+    <h2>Step 1: Upload Template</h2>
+    <form action="/upload_template" method="post" enctype="multipart/form-data">
+        <input type="file" name="template" required>
+        <button type="submit">Upload Template</button>
+    </form>
+
+    <h2>Step 2: Upload Filled Excel</h2>
+    <form action="/generate_reports" method="post" enctype="multipart/form-data">
+        <input type="file" name="excel" required>
+        <button type="submit">Generate Report Cards</button>
+    </form>
+</body>
+</html>
+
