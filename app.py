@@ -6,31 +6,23 @@ import os
 import logging
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
 load_dotenv()
-
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 
-# Dynamic folder paths
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_FOLDER = os.path.join(BASE_DIR, os.getenv('UPLOAD_FOLDER', 'uploads'))
 REPORT_FOLDER = os.path.join(BASE_DIR, os.getenv('REPORT_FOLDER', 'generated_reports'))
 ZIP_NAME = os.getenv('ZIP_NAME', 'report_cards.zip')
 
-# Ensure folders exist
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(REPORT_FOLDER, exist_ok=True)
 
-# Initialize Flask app
 app = Flask(__name__)
 
-# Home route
 @app.route('/')
 def index():
-    return render_template('Main.html')  # Make sure Main.html is inside templates/
+    return render_template('Main.html')
 
-# Upload template and generate Excel
 @app.route('/upload_template', methods=['POST'])
 def upload_template():
     try:
@@ -50,7 +42,6 @@ def upload_template():
         logging.error(f"Error in upload_template: {e}")
         abort(500)
 
-# Generate report cards from Excel
 @app.route('/generate_reports', methods=['POST'])
 def generate_reports():
     try:
@@ -61,11 +52,9 @@ def generate_reports():
         template_path = os.path.join(UPLOAD_FOLDER, 'template.docx')
         df = pd.read_excel(excel_path)
 
-        # Clear old reports
         for file in os.listdir(REPORT_FOLDER):
             os.remove(os.path.join(REPORT_FOLDER, file))
 
-        # Generate new reports
         for _, row in df.iterrows():
             doc = DocxTemplate(template_path)
             context = row.to_dict()
@@ -74,7 +63,6 @@ def generate_reports():
             doc.render(context)
             doc.save(filepath)
 
-        # Create ZIP
         zip_path = os.path.join(BASE_DIR, ZIP_NAME)
         with zipfile.ZipFile(zip_path, 'w') as zipf:
             for file in os.listdir(REPORT_FOLDER):
@@ -85,7 +73,6 @@ def generate_reports():
         logging.error(f"Error in generate_reports: {e}")
         abort(500)
 
-# Run the app
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.getenv('PORT', 5000)))
+    app.run(debug=True, host='127.0.0.1', port=int(os.getenv('PORT', 5000)))
 
